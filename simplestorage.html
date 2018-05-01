@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.2.3/milligram.min.css">
-  <title>Simple Storage Dapp ¿¹Á¦ </title>
+  <title>Simple Storage Dapp  </title>
   <style>
     body {margin-left:50px;}
     #storedData {font-size:300%; margin-right:10px;}
@@ -12,25 +12,25 @@
   </style>
 </head>
 <body>
-<h3>Simple Storage dApp ¿¹Á¦</h3>
+<h3>Simple Storage dApp ì˜ˆì œ</h3>
 <ul>
-  <li>ÄÁÆ®·¢Æ® ÁÖ¼Ò: <span id="contractAddr"></span></li>
-  <li>³» ¾îÄ«¿îÆ® ÁÖ¼Ò: <span id="accountAddr"></span></li>
-  <li>ÄÁÆ®·¢Æ®¿¡ ÀúÀåµÈ °ª: <span id="storedData"></span>
-    <button onclick="getValue()">»õ·Î°íÄ§</button> (ÇöÀçºí·Ï: <span id="lastBlock"></span>)</li>
-  <li><input id="newValue" type="text"><button onclick="setValue()">»õ °ªÀ¸·Î ÀúÀåÇÏ±â</button>
+  <li>ì»¨íŠ¸ë™íŠ¸ ì£¼ì†Œ: <span id="contractAddr"></span></li>
+  <li>ë‚´ ì–´ì¹´ìš´íŠ¸ ì£¼ì†Œ: <span id="accountAddr"></span></li>
+  <li>ì»¨íŠ¸ë™íŠ¸ì— ì €ì¥ëœ ê°’: <span id="storedData"></span>
+    <button onclick="getValue()">ìƒˆë¡œê³ ì¹¨</button> (í˜„ì¬ë¸”ë¡: <span id="lastBlock"></span>)</li>
+  <li><input id="newValue" type="text"><button onclick="setValue()">ìƒˆ ê°’ìœ¼ë¡œ ì €ì¥í•˜ê¸°</button>
       <div id="result"></div></li>
-  <li>»õ °ªÀ» ÀúÀåÇÑ ÈÄ ÆÒµù Æ®·£Àè¼ÇÀÌ ºí·Ï¿¡ Æ÷ÇÔµÇ¸é ÀÚµ¿À¸·Î ÆäÀÌÁö°¡ ¾÷µ¥ÀÌÆ®µÉ °ÍÀÔ´Ï´Ù.</li>
+  <li>ìƒˆ ê°’ì„ ì €ì¥í•œ í›„ íŒ¬ë”© íŠ¸ëœì­ì…˜ì´ ë¸”ë¡ì— í¬í•¨ë˜ë©´ ìë™ìœ¼ë¡œ í˜ì´ì§€ê°€ ì—…ë°ì´íŠ¸ë  ê²ƒì…ë‹ˆë‹¤.</li>
 </ul>
 
-ÄÁÆ®·¢Æ® ¼Ò½º
+ì»¨íŠ¸ë™íŠ¸ ì†ŒìŠ¤
 <script src="https://gist.github.com/atomrigs/7c633570496b79623bed5d1286f93f3a.js"></script>
 
-HTML ¼Ò½º<br>
+HTML ì†ŒìŠ¤<br>
 <a href="https://github.com/atomrigs/atomrigs.github.io/blob/master/simplestorage.html">https://github.com/atomrigs/atomrigs.github.io/blob/master/simplestorage.html</a>
 <br><br>
 <p>
-<a href="http://www.chaintalk.io/archive/lecture?sca=%EB%82%98%EB%8F%84+dApp+%EA%B0%9C%EB%B0%9C"><i>³ªµµ dApp °³¹ßÇØ º¸ÀÚ ½Ã¸®Áî by Atomrigs ¨Ï 2017</i></a>
+<a href="http://www.chaintalk.io/archive/lecture?sca=%EB%82%98%EB%8F%84+dApp+%EA%B0%9C%EB%B0%9C"><i>ë‚˜ë„ dApp ê°œë°œí•´ ë³´ì ì‹œë¦¬ì¦ˆ by Atomrigs â“’ 2017</i></a>
 </p>
 
 </body>
@@ -86,7 +86,7 @@ function setValue() {
     getValue();
     web3.eth.getTransaction(txid, function(e,r){
       if (r != null && r.blockNumber > 0) {
-        document.getElementById('pending').innerHTML = '(±â·ÏµÈ ºí·Ï: ' + r.blockNumber + ')';
+        document.getElementById('pending').innerHTML = '(ê¸°ë¡ëœ ë¸”ë¡: ' + r.blockNumber + ')';
         document.getElementById('pending').style.cssText ='color:green;';
         document.getElementById('storedData').style.cssText ='color:green; font-size:300%;';
         filter.stopWatching();
