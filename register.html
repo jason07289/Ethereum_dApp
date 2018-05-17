@@ -7,8 +7,12 @@
   <title>Register Dapp  </title>
   <style>
     body {margin-left:50px;}
-    #storedData {font-size:300%; margin-right:10px;}
-    #newValue {width: 200px; margin-right:10px; text-align:right;}
+    #birth {font-size:300%; margin-right:10px;}
+    #name {font-size:300%; margin-right:10px;}
+    #imagepath {font-size:300%; margin-right:10px;}
+    #newBirthValue {width: 200px; margin-right:10px; text-align:right;}
+    #newNameValue {width: 200px; margin-right:10px; text-align:right;}
+    #newImagepathValue {width: 200px; margin-right:10px; text-align:right;}
   </style>
 </head>
 <body>
@@ -16,10 +20,23 @@
 <ul>
   <li>컨트랙트 주소: <span id="contractAddr"></span></li>
   <li>내 Account 주소: <span id="accountAddr"></span></li>
-  <li>컨트랙트에 저장된 값: <span id="storedData"></span>
-    <button onclick="getValue()">새로고침</button> (현재블록: <span id="lastBlock"></span>)</li>
-  <li><input id="newValue" type="text"><button onclick="setValue()">새 값으로 저장하기</button>
-      <div id="result"></div></li>
+
+  <li>컨트랙트에 저장된 생년월일: <span id="birth"></span>
+    <button onclick="getBirthValue()">새로고침</button> (현재블록: <span id="lastBlock"></span>)</li>
+  <li>컨트랙트에 저장된 이름: <span id="name"></span>
+    <button onclick="getNameValue()">새로고침</button> </li>
+  <li>컨트랙트에 저장된 imagepath: <span id="imagepath"></span>
+    <button onclick="getImagePathValue()">새로고침</button> </li>
+
+  <li><input id="newBirthValue" type="text"><button onclick="setBirthValue()">생년월일 새 값으로 저장하기</button>
+      <div id="birthResult"></div></li>
+
+  <li><input id="newNameValue" type="text"><button onclick="setNameValue()">이름 새 값으로 저장하기</button>
+      <div id="nameResult"></div></li>
+
+  <li><input id="newImagepathValue" type="text"><button onclick="setImagepathValue()">imagepath 새 값으로 저장하기</button>
+      <div id="imagepathResult"></div></li>
+
   <li>Transaction 완료 후 블록이 생성 되면 페이지 새로고침</li>
 </ul>
 
@@ -30,9 +47,9 @@
 <!-- script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script -->
 <script>
 var contractAddress = '0xACC97451A0b0C2B8123E1E112B5CfF040186FBeC';
-var abi = [{"constant":false,"inputs":[{"name":"x","type":"uint256"}],"name":"set","outputs":[],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"get","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"}];
-var simpleStorageContract;
-var simpleStorage;
+var abi = [{"constant":true,"inputs":[],"name":"GetBirth","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"uname","type":"string"}],"name":"SetName","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ubirth","type":"uint256"}],"name":"SetBirth","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"uimage","type":"string"}],"name":"SetImagePath","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"GetImagePath","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"GetName","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}];
+var registerContract;
+var register;
 window.addEventListener('load', function() {
   // Checking if Web3 has been injected by the browser (Mist/MetaMask)
   if (typeof web3 !== 'undefined') {
@@ -41,48 +58,86 @@ window.addEventListener('load', function() {
   } else {
     console.log('No web3? You should consider trying MetaMask!')
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8080"));
   }
   // Now you can start your app & access web3 freely:
   startApp();
 });
 function startApp() {
-  simpleStorageContract = web3.eth.contract(abi);
-  simpleStorage = simpleStorageContract.at(contractAddress);
+  registerContract = web3.eth.contract(abi);
+  register = registerContract.at(contractAddress);
   document.getElementById('contractAddr').innerHTML = getLink(contractAddress);
   web3.eth.getAccounts(function(e,r){
     document.getElementById('accountAddr').innerHTML = getLink(r[0]);
   });
-  getValue();
+  getBirthValue();
+  getNameValue();
+  getImagepathValue();
 }
 function getLink(addr) {
   return '<a target="_blank" href=https://testnet.etherscan.io/address/' + addr + '>' + addr +'</a>';
 }
-function getValue() {
-  simpleStorage.get(function(e,r){
-    document.getElementById('storedData').innerHTML=r.toNumber();
+
+function getBirthValue() {
+  register.GetBirth(function(e,r){
+    document.getElementById('birth').innerHTML=r.toNumber();
   });
   web3.eth.getBlockNumber(function(e,r){
     document.getElementById('lastBlock').innerHTML = r;
   });
 }
-function setValue() {
-  var newValue = document.getElementById('newValue').value;
+
+function getNameValue() {
+  register.GetName(function(e,r){
+    document.getElementById('name').innerHTML=r.toNumber();
+  });
+
+}
+function getImagepathValue() {
+  register.GetImagePath(function(e,r){
+    document.getElementById('imagepath').innerHTML=r.toNumber();
+  });
+
+}
+function setBirthValue() {
+  var newValue = document.getElementById('newBirthValue').value;
   var txid
-  simpleStorage.set(newValue, function(e,r){
-    document.getElementById('result').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
+  register.SetBirth(newValue, function(e,r){  //여기있는 newValue는 바꾸지마~
+    document.getElementById('birthResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
     txid = r;
   });
+/*
+function setNameValue() {
+  var newValue = document.getElementById('newNameValue').value;
+  var txid
+  register.SetName(newNameValue, function(e,r){
+    document.getElementById('nameResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
+    txid = r;
+  });
+function setImagepathValue() {
+  var newValue = document.getElementById('newImagepathValue').value;
+  var txid
+  register.SetImagePath(newImagepathValue, function(e,r){
+    document.getElementById('imagepathResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
+    txid = r;
+  });*/
   var filter = web3.eth.filter('latest');
   filter.watch(function(e, r) {
-    getValue();
+    getBirthValue();
+    getNameValue();
+    getImagepathValue();
     web3.eth.getTransaction(txid, function(e,r){
       if (r != null && r.blockNumber > 0) {
         document.getElementById('pending').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
         document.getElementById('pending').style.cssText ='color:green;';
-        document.getElementById('storedData').style.cssText ='color:green; font-size:300%;';
+        document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
+        document.getElementById('name').style.cssText ='color:green; font-size:300%;';
+        document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
         filter.stopWatching();
       }
+
+
+
    });
  });
 }
