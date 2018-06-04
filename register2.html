@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Transfer Sample</title>
+    <script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="../bower_components/web3/dist/web3.js"></script>
+</head>
+<body>
+<h2>Contract</h2>
+<div>
+    <h3>Create</h3>
+    <button id="btnCreate">Create</button>
+    <h3>At</h3>
+    <input type="text" id="_contractAddress" size="20"/><button id="btnAt">At</button>
+
+    <h3>New Campaign</h3>
+    Beneficiery : <input type="text" id="_beneficiery" size="40"/><br/>
+    Goal (ether): <input type="text" id="_goal" size="20"/><br/>
+    <button id="btnNewCampaign">New Campaign</button>
+
+    <h3>Contribute</h3>
+    Campaign ID : <input type="text" id="_contributeCampaignId" size="5"/><br/>
+    Amount (ether) : <input type="text" id="_contributeEther" size="20"/><br/>
+    <button id="btnContribute">Contribute</button>
+
+    <h3>Goal Reached Check</h3>
+    Campaign ID : <input type="text" id="_checkCampaignId" size="5"/><br/>
+    Is Reached : <input type="text" id="_checkResult" size="5" readonly/><br/>
+    <button id="btnCheck">Check(call)</button><button id="btnCheck_Tx">Check(send)</button>
+</div>
+
+<script type="text/javascript">
+// web3 Initialization (Set web3 Provider)
+var Web3 = require('web3');
+var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
+//var web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8080"));
+var code = "0x608060405234801561001057600080fd5b506103a1806100206000396000f300608060405260043610610057576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff1680635b2329d41461005c578063c1cbbca7146100a1578063f7572cf3146100ce575b600080fd5b34801561006857600080fd5b506100876004803603810190808035906020019092919050505061012f565b604051808215151515815260200191505060405180910390f35b3480156100ad57600080fd5b506100cc600480360381019080803590602001909291905050506101d3565b005b3480156100da57600080fd5b50610119600480360381019080803573ffffffffffffffffffffffffffffffffffffffff169060200190929190803590602001909291905050506102a6565b6040518082815260200191505060405180910390f35b60008060016000848152602001908152602001600020905080600101548160030154101561016057600091506101cd565b8060000160009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166108fc82600301549081150290604051600060405180830381858888f193505050505060008160030181905550600191505b50919050565b600060016000838152602001908152602001600020905060408051908101604052803373ffffffffffffffffffffffffffffffffffffffff1681526020013481525081600401600083600201600081548092919060010191905055815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550602082015181600101559050503481600301600082825401925050819055505050565b60008060008154809291906001019190505590506080604051908101604052808473ffffffffffffffffffffffffffffffffffffffff1681526020018381526020016000815260200160008152506001600083815260200190815260200160002060008201518160000160006101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550602082015181600101556040820151816002015560608201518160030155905050929150505600a165627a7a72305820164c6d46df8e40ecd719a3d734d779cd3116b5187492a80467404d4c425a81de0029";
+var abi = [{"constant":false,"inputs":[{"name":"campaignID","type":"uint256"}],"name":"checkGoalReached","outputs":[{"name":"reached","type":"bool"}],"type":"function"},{"constant":false,"inputs":[{"name":"campaignID","type":"uint256"}],"name":"contribute","outputs":[],"type":"function"},{"constant":false,"inputs":[{"name":"beneficiary","type":"address"},{"name":"goal","type":"uint256"}],"name":"newCampaign","outputs":[{"name":"campaignID","type":"uint256"}],"type":"function"}];
+var Contract = web3.eth.contract(abi);
+var crowd = null;
+$(document).ready(function() {
+    // Unlock First Account
+    //web3.personal.unlockAccount(web3.eth.accounts[0],'1111');
+    console.log("UNLOCKED");
+    $('#btnCreate').click(function(){
+            crowd = Contract.new({
+            data:code,
+            gas:2000000,
+            from:web3.eth.accounts[0]
+        }, function (error, contract) {
+            if (!error) {
+                if (!contract.address) {
+                    console.log("Creating Contract", contract.transactionHash);
+                } else {
+                    address = contract.address;
+                    console.log("Contract Deployed", contract.address);
+                }
+            } else
+                console.error(error);
+        });
+    });
+    $('#btnAt').click(function(){
+        var address = $('#_contractAddress').val();
+        crowd = Contract.at(address);
+    });
+    $('#btnNewCampaign').click(function(){
+    });
+    $('#btnContribute').click(function(){
+    });
+    $('#btnCheck').click(function(){
+    });
+    $('#btnCheck_Tx').click(function(){
+    });
+});
+</script>
+</body>
+</html>

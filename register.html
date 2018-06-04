@@ -24,9 +24,9 @@
   <li>컨트랙트에 저장된 생년월일: <span id="birth"></span>
     <button onclick="getBirthValue()">새로고침</button> (현재블록: <span id="lastBlock"></span>)</li>
   <li>컨트랙트에 저장된 이름: <span id="name"></span>
-    <button onclick="getNameValue()">새로고침</button> </li>
+    <button onclick="getNameValue()">새로고침</button> (현재블록: <span id="lastBlock2"></span>)</li>
   <li>컨트랙트에 저장된 imagepath: <span id="imagepath"></span>
-    <button onclick="getImagePathValue()">새로고침</button> </li>
+    <button onclick="getImagePathValue()">새로고침</button> (현재블록: <span id="lastBlock3"></span>)</li>
 
   <li><input id="newBirthValue" type="text"><button onclick="setBirthValue()">생년월일 새 값으로 저장하기</button>
       <div id="birthResult"></div></li>
@@ -43,10 +43,16 @@
 
 
 </body>
+
 <script src="https://cdn.rawgit.com/ethereum/web3.js/develop/dist/web3.js"></script>
+<script type="text/javascript" src="register3.html"></script>
+<script type="text/javascript" src="test.js"></script>
 <!-- script src="https://code.jquery.com/jquery-3.1.1.slim.min.js"></script -->
 <script>
-var contractAddress = '0xACC97451A0b0C2B8123E1E112B5CfF040186FBeC';
+
+
+
+//var contractAddress = '0xACC97451A0b0C2B8123E1E112B5CfF040186FBeC';
 var abi = [{"constant":true,"inputs":[],"name":"GetBirth","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"uname","type":"string"}],"name":"SetName","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ubirth","type":"uint256"}],"name":"SetBirth","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"uimage","type":"string"}],"name":"SetImagePath","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"GetImagePath","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"GetName","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}];
 var registerContract;
 var register;
@@ -58,7 +64,7 @@ window.addEventListener('load', function() {
   } else {
     console.log('No web3? You should consider trying MetaMask!')
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8080"));
+    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8780"));
   }
   // Now you can start your app & access web3 freely:
   startApp();
@@ -89,35 +95,40 @@ function getBirthValue() {
 
 function getNameValue() {
   register.GetName(function(e,r){
-    document.getElementById('name').innerHTML=r.toNumber();
+    document.getElementById('name').innerHTML=r.toString();
   });
-
+  web3.eth.getBlockNumber(function(e,r){
+    document.getElementById('lastBlock2').innerHTML = r;
+  });
 }
 function getImagepathValue() {
   register.GetImagePath(function(e,r){
-    document.getElementById('imagepath').innerHTML=r.toNumber();
+    document.getElementById('imagepath').innerHTML=r.toString();
   });
-
+  web3.eth.getBlockNumber(function(e,r){
+    document.getElementById('lastBlock3').innerHTML = r;
+  });
 }
 function setBirthValue() {
-  var newValue = document.getElementById('newBirthValue').value;
-  var txid
-  register.SetBirth(newValue, function(e,r){  //여기있는 newValue는 바꾸지마~
+  var newBValue = document.getElementById('newBirthValue').value;
+  var txid1
+  register.SetBirth(newBValue, function(e,r){
     document.getElementById('birthResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
-    txid = r;
+    txid1 = r;
   });
 /*
 function setNameValue() {
-  var newValue = document.getElementById('newNameValue').value;
+  var newNameValue = document.getElementById('newNameValue').value;
   var txid
   register.SetName(newNameValue, function(e,r){
     document.getElementById('nameResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
     txid = r;
   });
+  /*
 function setImagepathValue() {
   var newValue = document.getElementById('newImagepathValue').value;
   var txid
-  register.SetImagePath(newImagepathValue, function(e,r){
+  register.SetImagePath(newValue, function(e,r){
     document.getElementById('imagepathResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
     txid = r;
   });*/
@@ -126,14 +137,14 @@ function setImagepathValue() {
     getBirthValue();
     getNameValue();
     getImagepathValue();
-    web3.eth.getTransaction(txid, function(e,r){
+    web3.eth.getTransaction(txid1, function(e,r){
       if (r != null && r.blockNumber > 0) {
         document.getElementById('pending').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
         document.getElementById('pending').style.cssText ='color:green;';
         document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
         document.getElementById('name').style.cssText ='color:green; font-size:300%;';
         document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
-        filter.stopWatching();
+        filter.stopWatching();//ddd
       }
 
 
