@@ -71,7 +71,7 @@ function button1_click() {
  })
 }
 function button2_click(){
-  document.getElementById('registerweb').innerHTML = '<ul><li>컨트랙트에 저장된 생년월일: <span id="birth"></span><button onclick="getBirthValue()">새로고침</button> (현재블록: <span id="lastBlock"></span>)</li><li>컨트랙트에 저장된 이름: <span id="name"></span><button onclick="getNameValue()">새로고침</button> (현재블록: <span id="lastBlock2"></span>)</li><li>컨트랙트에 저장된 imagepath: <span id="imagepath"></span><button onclick="getImagePathValue()">새로고침</button> (현재블록: <span id="lastBlock3"></span>)</li><li><input id="newBirthValue" type="text"><button onclick="setBirthValue()">생년월일 새 값으로 저장하기</button><div id="birthResult"></div></li><li><input id="newNameValue" type="text"><button onclick="setNameValue()">이름 새 값으로 저장하기</button><div id="nameResult"></div></li><li><input id="newImagepathValue" type="text"><button onclick="setImagepathValue()">imagepath 새 값으로 저장하기</button><div id="imagepathResult"></div></li></ul>';
+  document.getElementById('registerweb').innerHTML = '<ul><li><div id="imgupdate"></div></li><li>컨트랙트에 저장된 생년월일: <span id="birth"></span><button onclick="getBirthValue()">새로고침</button> (현재블록: <span id="lastBlock"></span>)</li><li>컨트랙트에 저장된 이름: <span id="name"></span><button onclick="getNameValue()">새로고침</button> (현재블록: <span id="lastBlock2"></span>)</li><li>컨트랙트에 저장된 imagepath: <span id="imagepath"></span><button onclick="getImagePathValue()">새로고침</button> (현재블록: <span id="lastBlock3"></span>)</li><li><input id="newBirthValue" type="text"><button onclick="setBirthValue()">생년월일 새 값으로 저장하기</button><div id="birthResult"></div></li><li><input id="newNameValue" type="text"><button onclick="setNameValue()">이름 새 값으로 저장하기</button><div id="nameResult"></div></li><li><input id="newImagepathValue" type="text"><button onclick="setImagepathValue()">imagepath 새 값으로 저장하기</button><div id="imagepathResult"></div></li></ul>';
   startApp();
 }
 //var contractAddress = '0xACC97451A0b0C2B8123E1E112B5CfF040186FBeC';
@@ -127,6 +127,11 @@ function getNameValue() {
 function getImagepathValue() {
   register.GetImagePath(function(e,r){
     document.getElementById('imagepath').innerHTML=r.toString();
+    imgval = r.toString();
+    console.log(imgval);
+
+    document.getElementById('imgupdate').innerHTML = '<li><img id="targetimg" src="" width="200" ></li>';
+    document.getElementById('targetimg').src = imgval
   });
   web3.eth.getBlockNumber(function(e,r){
     document.getElementById('lastBlock3').innerHTML = r;
@@ -134,12 +139,32 @@ function getImagepathValue() {
 }
 function setBirthValue() {
   var newBValue = document.getElementById('newBirthValue').value;
-  var txid1
+  var txid
   register.SetBirth(newBValue, function(e,r){
     document.getElementById('birthResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
-    txid1 = r;
+    txid = r;
   });
-/*
+  var filter = web3.eth.filter('latest');
+  filter.watch(function(e, r) {
+    getBirthValue();
+    getNameValue();
+    getImagepathValue();
+    web3.eth.getTransaction(txid, function(e,r){
+      if (r != null && r.blockNumber > 0) {
+        document.getElementById('pending').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
+        document.getElementById('pending').style.cssText ='color:green;';
+        document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
+        //document.getElementById('name').style.cssText ='color:green; font-size:300%;';
+      //  document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
+        filter.stopWatching();//ddd
+      }
+
+
+
+   });
+  });
+
+}
 function setNameValue() {
   var newNameValue = document.getElementById('newNameValue').value;
   var txid
@@ -147,25 +172,44 @@ function setNameValue() {
     document.getElementById('nameResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
     txid = r;
   });
-  /*
-function setImagepathValue() {
-  var newValue = document.getElementById('newImagepathValue').value;
-  var txid
-  register.SetImagePath(newValue, function(e,r){
-    document.getElementById('imagepathResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
-    txid = r;
-  });*/
   var filter = web3.eth.filter('latest');
   filter.watch(function(e, r) {
     getBirthValue();
     getNameValue();
     getImagepathValue();
-    web3.eth.getTransaction(txid1, function(e,r){
+    web3.eth.getTransaction(txid, function(e,r){
       if (r != null && r.blockNumber > 0) {
         document.getElementById('pending').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
         document.getElementById('pending').style.cssText ='color:green;';
-        document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
+        //document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
         document.getElementById('name').style.cssText ='color:green; font-size:300%;';
+        //document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
+        filter.stopWatching();//ddd
+      }
+
+
+
+   });
+ });
+}
+function setImagepathValue() {
+  var newImagepathValue = document.getElementById('newImagepathValue').value;
+  var txid
+  register.SetImagePath(newImagepathValue, function(e,r){
+    document.getElementById('imagepathResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
+    txid = r;
+  });
+  var filter = web3.eth.filter('latest');
+  filter.watch(function(e, r) {
+    getBirthValue();
+    getNameValue();
+    getImagepathValue();
+    web3.eth.getTransaction(txid, function(e,r){
+      if (r != null && r.blockNumber > 0) {
+        document.getElementById('pending').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
+        document.getElementById('pending').style.cssText ='color:green;';
+        //document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
+        //document.getElementById('name').style.cssText ='color:green; font-size:300%;';
         document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
         filter.stopWatching();//ddd
       }
@@ -175,5 +219,7 @@ function setImagepathValue() {
    });
  });
 }
+
+
 </script>
 </html>
