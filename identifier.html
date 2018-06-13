@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
   <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.2.3/milligram.min.css">
-  <title>Identifier Dapp  </title>
+  <title>Identifier DApp  </title>
   <style>
     body {margin-left:50px;}
     #birth {font-size:300%; margin-right:10px;}
@@ -17,7 +17,7 @@
   </style>
 </head>
 <body>
-<h3>Identifier dAPP 초안</h3>
+<h3>Identifier DApp</h3>
 <ul>
   <li>컨트랙트 주소: <span id="contractAddr"></span></li>
   <li>내 Account 주소: <span id="accountAddr"></span></li>
@@ -162,7 +162,7 @@ function setNameValue() {
   var newNameValue = document.getElementById('newNameValue').value;
   var txid
   register.SetName(newNameValue, function(e,r){
-    document.getElementById('nameResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
+    document.getElementById('nameResult').innerHTML = 'Transaction id: ' + r + '<span id="pending2" style="color:red;">(Pending)</span>';
     txid = r;
   });
   var filter = web3.eth.filter('latest');
@@ -172,8 +172,8 @@ function setNameValue() {
     getImagepathValue();
     web3.eth.getTransaction(txid, function(e,r){
       if (r != null && r.blockNumber > 0) {
-        document.getElementById('pending').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
-        document.getElementById('pending').style.cssText ='color:green;';
+        document.getElementById('pending2').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
+        document.getElementById('pending2').style.cssText ='color:green;';
         //document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
         document.getElementById('name').style.cssText ='color:green; font-size:300%;';
       //  document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
@@ -189,7 +189,7 @@ function setImagepathValue() {
   var newImagepathValue = document.getElementById('newImagepathValue').value;
   var txid
   register.SetImagePath(newImagepathValue, function(e,r){
-    document.getElementById('imagepathResult').innerHTML = 'Transaction id: ' + r + '<span id="pending" style="color:red;">(Pending)</span>';
+    document.getElementById('imagepathResult').innerHTML = 'Transaction id: ' + r + '<span id="pending3" style="color:red;">(Pending)</span>';
     txid = r;
   });
   var filter = web3.eth.filter('latest');
@@ -199,8 +199,8 @@ function setImagepathValue() {
     getImagepathValue();
     web3.eth.getTransaction(txid, function(e,r){
       if (r != null && r.blockNumber > 0) {
-        document.getElementById('pending').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
-        document.getElementById('pending').style.cssText ='color:green;';
+        document.getElementById('pending3').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
+        document.getElementById('pending3').style.cssText ='color:green;';
         //document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
       //  document.getElementById('name').style.cssText ='color:green; font-size:300%;';
         document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
