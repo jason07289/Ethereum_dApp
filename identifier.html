@@ -55,18 +55,15 @@
 <script>
 
 function setContractValue() {
-var input = document.getElementById("newContractValue").value;
+var input = document.getElementById("newContractValue").value;//input으로 내가 접근할 contract address를 만든다.
 contractAddress = input;
 startApp();
-//contractAddress = NULL;
+
 };
 
-
-
-//contractAddress = '0xACC97451A0b0C2B8123E1E112B5CfF040186FBeC';
-
-contractAddress = null;
+contractAddress = null;//contract 주소를 null로 초기화한다.
 var abi = [{"constant":true,"inputs":[],"name":"GetBirth","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"uname","type":"string"}],"name":"SetName","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ubirth","type":"uint256"}],"name":"SetBirth","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"uimage","type":"string"}],"name":"SetImagePath","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"GetImagePath","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"GetName","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"}];
+//contract를 담을 형식
 var registerContract;
 var register;
 window.addEventListener('load', function() {
@@ -77,33 +74,33 @@ window.addEventListener('load', function() {
   } else {
     console.log('No web3? You should consider trying MetaMask!')
     // fallback - use your fallback strategy (local node / hosted node + in-dapp id mgmt / fail)
-    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8780"));
+    window.web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8780"));//메타 마스크 및 이더리움 네트워크와 연결해주는 코드
   }
   // Now you can start your app & access web3 freely:
   startApp();
 });
 
 function startApp() {
-  registerContract = web3.eth.contract(abi);
-  register = registerContract.at(contractAddress);
+  registerContract = web3.eth.contract(abi);//abi를 인자로한 contract 형식에 대한 코드
+  register = registerContract.at(contractAddress);//contractAddress를 인자로 한 smartcontract 접근 코드
   document.getElementById('contractAddr').innerHTML = getLink(contractAddress);
   web3.eth.getAccounts(function(e,r){
     document.getElementById('accountAddr').innerHTML = getLink(r[0]);
   });
   getBirthValue();
   getNameValue();
-  getImagepathValue();
+  getImagepathValue();//smartcontract의 각 value들을 읽어 오는 함수들
 }
 function getLink(addr) {
   return '<a target="_blank" href=https://testnet.etherscan.io/address/' + addr + '>' + addr +'</a>';
 }
 
 function getBirthValue() {
-  register.GetBirth(function(e,r){
-    document.getElementById('birth').innerHTML=r.toNumber();
+  register.GetBirth(function(e,r){//계약서에서 만들어 주었던 GetBirth함수 실행
+    document.getElementById('birth').innerHTML=r.toNumber();//birth값을 받는다면 숫자로 바꿔서 보여준다.
   });
   web3.eth.getBlockNumber(function(e,r){
-    document.getElementById('lastBlock').innerHTML = r;
+    document.getElementById('lastBlock').innerHTML = r;//해당 정보가 기록된 블록 숫자를 보여줌
   });
 }
 
@@ -115,7 +112,7 @@ function getNameValue() {
     document.getElementById('lastBlock2').innerHTML = r;
   });
 }
-function getImagepathValue() {
+function getImagepathValue() {//이미지path를 local의 폴더와 연결하여 맞는 사진이 있다면 띄워준다.
   register.GetImagePath(function(e,r){
     document.getElementById('imagepath').innerHTML=r.toString();
 
@@ -130,7 +127,7 @@ function getImagepathValue() {
   });
 }
 
-function setBirthValue() {
+function setBirthValue() {//새로운 birth값 입력하는 함수
   var newBValue = document.getElementById('newBirthValue').value;
   var txid
   register.SetBirth(newBValue, function(e,r){
@@ -138,18 +135,17 @@ function setBirthValue() {
     txid = r;
   });
   var filter = web3.eth.filter('latest');
-  filter.watch(function(e, r) {
+  filter.watch(function(e, r) {//블록체인의 변화를 확인하면
     getBirthValue();
     getNameValue();
-    getImagepathValue();
+    getImagepathValue();// 새로 값들을 불러온다.
     web3.eth.getTransaction(txid, function(e,r){
       if (r != null && r.blockNumber > 0) {
         document.getElementById('pending').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
         document.getElementById('pending').style.cssText ='color:green;';
         document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
-        //document.getElementById('name').style.cssText ='color:green; font-size:300%;';
-        //document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
-        filter.stopWatching();//ddd
+
+        filter.stopWatching();//watching을 그만한다.
       }
 
 
@@ -158,7 +154,7 @@ function setBirthValue() {
   });
 
 }
-function setNameValue() {
+function setNameValue() {//새로운 name값 입력하는 함수
   var newNameValue = document.getElementById('newNameValue').value;
   var txid
   register.SetName(newNameValue, function(e,r){
@@ -174,10 +170,9 @@ function setNameValue() {
       if (r != null && r.blockNumber > 0) {
         document.getElementById('pending2').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
         document.getElementById('pending2').style.cssText ='color:green;';
-        //document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
         document.getElementById('name').style.cssText ='color:green; font-size:300%;';
-      //  document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
-        filter.stopWatching();//ddd
+
+        filter.stopWatching();
       }
 
 
@@ -185,7 +180,7 @@ function setNameValue() {
    });
  });
 }
-function setImagepathValue() {
+function setImagepathValue() {//새로운 imagepath 값 입력하는 함수
   var newImagepathValue = document.getElementById('newImagepathValue').value;
   var txid
   register.SetImagePath(newImagepathValue, function(e,r){
@@ -201,10 +196,9 @@ function setImagepathValue() {
       if (r != null && r.blockNumber > 0) {
         document.getElementById('pending3').innerHTML = '(기록된 블록: ' + r.blockNumber + ')';
         document.getElementById('pending3').style.cssText ='color:green;';
-        //document.getElementById('birth').style.cssText ='color:green; font-size:300%;';
-      //  document.getElementById('name').style.cssText ='color:green; font-size:300%;';
         document.getElementById('imagepath').style.cssText ='color:green; font-size:300%;';
-        filter.stopWatching();//ddd
+
+        filter.stopWatching();
       }
 
 
